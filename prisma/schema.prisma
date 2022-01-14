@@ -11,29 +11,30 @@ datasource db {
 }
 
 model Users {
-  id Int @id @default(autoincrement())
+  id Int @id @map("_id") @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  email String @unique @db.VarChar(256)
   posts Posts[]
   comments Comments[]
-  nickname String @db.VarChar(100)
+  email String @unique @db.VarChar(256)
+  nickname String @unique @db.VarChar(100)
   password String @db.VarChar(256)
 }
 
 model Posts {
-    id Int @id @default(autoincrement())
+    id Int @id @map("_id") @default(autoincrement())
     title String @db.VarChar(256)
     content String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    published Boolean @default(false)
     user Users? @relation(fields: [userId], references: [id], onDelete: SetNull)
     userId Int?
     comments Comments[]
 }
 
 model Comments {
-    id Int @id @default(autoincrement())
+    id Int @id @map("_id") @default(autoincrement())
     comment String
     post Posts @relation(fields: [postId], references: [id], onDelete: Cascade)
     postId Int
