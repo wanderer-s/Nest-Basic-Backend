@@ -16,4 +16,8 @@ export class UserCreateDto {
   @IsString()
   @ApiProperty({ description: '사용자 비밀번호' })
   password: string;
+
+  @IsString()
+  @ApiProperty({ description: '사용자 비밀번호 확인' })
+  passwordCheck?: string;
 }
