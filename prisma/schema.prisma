@@ -14,7 +14,7 @@ model Users {
   id           Int        @id @default(autoincrement()) @map("_id")
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  deactivateAt DateTime
+  deactivateAt DateTime?
   posts        Posts[]
   comments     Comments[]
   email        String     @unique @db.VarChar(256)
