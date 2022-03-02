@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { LoginDto } from '../auth/dto/login.dto';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserCreateDto } from './dto/user.create.dto';
 import { UsersService } from './users.service';
 
@@ -10,44 +9,19 @@ import { UsersService } from './users.service';
   description: '**관리자에게 문의하세요**'
 })
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService // private readonly authService: AuthService
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @Get(':id')
   @ApiOperation({
-    summary: '사용자 정보',
-    description: '## 사용자 정보 호출 API'
+    summary: '회원가입',
+    description: '## 사용자 회원 가입'
   })
-  @ApiParam({
-    name: 'email',
-    description: '사용자 email',
-    example: 'test@test.com'
+  @ApiBadRequestResponse({
+    description:
+      '- `Email already exists` 이미 존재하는 email\n- `Nickname already exists` 이미 존재하는 nickname\n- `Password must follow the rule` 비밀번호 규칙(8~20 숫자 문자 최소 1개포함)위반\n- `password and passwordCheck must be same` 비밀번호와 비밀번호 확인 불일치'
   })
-  @ApiOkResponse({
-    description: '성공'
-  })
-  findOne(@Param('id') id: number) {
-    return `this is your ${id}`;
-  }
-
-  @Post('signin')
-  signIn(@Body() data: LoginDto) {
-    return 'sign in';
-  }
-
-  @Post()
-  async signUp(@Body() data: UserCreateDto) {
-    return await this.usersService.signUp(data);
-  }
-
-  @Put(':id')
-  async updateUser(@Param('id') id: number, @Body() data) {
-    return `This is PUT request id : ${id}`;
-  }
-
-  @Delete(':id')
-  async deleteUser(@Param('id') id: number) {
-    return `This is DELETE request id : ${id}`;
+  //
+  @Post('')
+  async signUp(@Body() dto: UserCreateDto) {
+    return await this.usersService.signUp(dto);
   }
 }

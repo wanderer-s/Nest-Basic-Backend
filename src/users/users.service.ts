@@ -1,43 +1,41 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { Users } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserCreateDto } from './dto/user.create.dto';
-import { HttpException } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
+import { PrismaService } from 'prisma/prisma.service';
 import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly prisma: PrismaService) {}
+
+  validatePassword(password: string, passwordCheck: string) {
+    if (!/^(?=.*\D)(?=.*\d)[\d\D\W]{8,20}$/.test(password)) {
+      throw new BadRequestException('Password must follow the rule');
+    }
+
+    if (password !== passwordCheck) {
+      throw new BadRequestException('password and passwordCheck must be same');
+    }
+  }
 
   async signUp(data: UserCreateDto) {
     const { email, nickname, password, passwordCheck } = data;
 
-    const userByEmail = await this.usersRepository.findUser({ email });
+    const userByEmail = await this.prisma.users.findUnique({ where: { email } });
 
     if (userByEmail) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Email already exists');
     }
 
-    const userByNickname = await this.usersRepository.findUser({ nickname });
+    const userByNickname = await this.prisma.users.findUnique({ where: { nickname } });
 
     if (userByNickname) {
-      throw new HttpException('Nickname already exists', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Nickname already exists');
     }
 
-    if (!/^(?=.*\D)(?=.*\d)[\d\D\W]{8,20}$/.test(password)) {
-      throw new HttpException('You must follow password rule', HttpStatus.BAD_REQUEST);
-    }
-
-    if (password !== passwordCheck) {
-      throw new HttpException('password and passwordCheck must be same', HttpStatus.BAD_REQUEST);
-    }
+    this.validatePassword(password, passwordCheck);
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await this.usersRepository.signUp({ email, nickname, password: hashedPassword });
-  }
-
-  async getUser(data): Promise<Users> {
-    return await this.usersRepository.findUser(data);
+    await this.prisma.users.create({ data: { email, nickname, password: hashedPassword } });
   }
 }
