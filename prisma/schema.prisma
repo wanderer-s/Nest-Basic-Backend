@@ -12,8 +12,8 @@ datasource db {
 
 model Users {
   id           Int        @id @default(autoincrement()) @map("_id")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
   deactivateAt DateTime?
   posts        Posts[]
   comments     Comments[]
@@ -26,8 +26,8 @@ model Posts {
   id        Int        @id @default(autoincrement()) @map("_id")
   title     String     @db.VarChar(256)
   content   String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
   published Boolean    @default(false)
   user      Users?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId    Int?
@@ -41,6 +41,6 @@ model Comments {
   postId    Int
   user      Users?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 }
