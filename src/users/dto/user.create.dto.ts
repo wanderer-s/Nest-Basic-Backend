@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class UserCreateDto {
   @IsNotEmpty()
@@ -17,8 +17,8 @@ export class UserCreateDto {
   @ApiProperty({ description: '사용자 비밀번호' })
   readonly password: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  @ApiPropertyOptional({ description: '사용자 비밀번호 확인' })
+  @ApiProperty({ description: '사용자 비밀번호 확인' })
   readonly passwordCheck: string;
 }
