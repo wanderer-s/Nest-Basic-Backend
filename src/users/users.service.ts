@@ -3,7 +3,7 @@ import { UserCreateDto } from './dto/user.create.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import bcrypt from 'bcrypt';
 import { PasswordUpdateDto } from './dto/password.update.dto';
-
+import { UserUpdateDto } from './dto/user.update.dto';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -16,6 +16,13 @@ export class UsersService {
     if (password !== passwordCheck) {
       throw new BadRequestException('password and passwordCheck must be same');
     }
+  }
+
+  async userFind(userId: number) {
+    const foundUser = await this.prisma.users.findUnique({ where: { id: userId } });
+    if (!foundUser) throw new ForbiddenException('Access is denied');
+
+    return foundUser;
   }
 
   async signUp(data: UserCreateDto) {
@@ -40,10 +47,8 @@ export class UsersService {
     await this.prisma.users.create({ data: { email, nickname, password: hashedPassword } });
   }
 
-  async passwordUpdate(userId, dto: PasswordUpdateDto) {
-    const foundUser = await this.prisma.users.findUnique({ where: { id: userId } });
-
-    if (!foundUser) throw new ForbiddenException('Access is denied');
+  async passwordUpdate(userId: number, dto: PasswordUpdateDto) {
+    const foundUser = await this.userFind(userId);
 
     this.validatePassword(dto.newPassword, dto.newPasswordCheck);
 
@@ -52,5 +57,11 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
 
     await this.prisma.users.update({ where: { id: userId }, data: { password: hashedPassword } });
+  }
+
+  async userUpdate(userId: number, dto: UserUpdateDto) {
+    await this.userFind(userId);
+
+    await this.prisma.users.update({ where: { id: userId }, data: dto });
   }
 }

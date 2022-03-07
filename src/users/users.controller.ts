@@ -1,8 +1,9 @@
-import { Body, Controller, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { PasswordUpdateDto } from './dto/password.update.dto';
 import { UserCreateDto } from './dto/user.create.dto';
+import { UserUpdateDto } from './dto/user.update.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -48,5 +49,24 @@ export class UsersController {
   @Patch('password')
   async passwordUpdate(@Body() dto: PasswordUpdateDto, @Req() req): Promise<void> {
     await this.usersService.passwordUpdate(req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  //
+  @ApiOperation({
+    description: '## 사용자 정보변경',
+    summary: '정보변경'
+  })
+  @ApiUnauthorizedResponse({
+    description: '- `Unauthorized`'
+  })
+  @ApiForbiddenResponse({
+    description: '- `Access is denied` 잘못된 접근'
+  })
+  //
+  @Patch()
+  async userUpdate(@Body() dto: UserUpdateDto, @Req() req) {
+    await this.usersService.userUpdate(req.user.id, dto);
   }
 }
