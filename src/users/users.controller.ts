@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { PasswordUpdateDto } from './dto/password.update.dto';
@@ -68,5 +68,23 @@ export class UsersController {
   @Patch()
   async userUpdate(@Body() dto: UserUpdateDto, @Req() req) {
     await this.usersService.userUpdate(req.user.id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  //
+  @ApiOperation({
+    description: '## 회원탈퇴 신청\n이후 일주일동안 사용 가능하고 일주일이 지나면 해당 **email**과 **nickname**으로 새로 회원가입 가능',
+    summary: '회원탈퇴 신청'
+  })
+  @ApiUnauthorizedResponse({
+    description: '- `Unauthorized`'
+  })
+  @ApiForbiddenResponse({
+    description: '- `Access is denied` 잘못된 접근'
+  })
+  @Delete()
+  async deactivateUser(@Req() req) {
+    await this.usersService.deactivateUser(req.user.id);
   }
 }
