@@ -22,7 +22,7 @@ export class UsersService {
     const foundUser = await this.prisma.users.findFirst({
       where: {
         id: userId,
-        OR: [{ deactivatedAt: { gt: new Date() } }, { deactivatedAt: null }]
+        deactivatedAt: null
       }
     });
     if (!foundUser) throw new ForbiddenException('Access is denied');
@@ -36,7 +36,7 @@ export class UsersService {
     const userByEmail = await this.prisma.users.findFirst({
       where: {
         email,
-        OR: [{ deactivatedAt: { gt: new Date() } }, { deactivatedAt: null }]
+        deactivatedAt: null
       }
     });
 
@@ -47,7 +47,7 @@ export class UsersService {
     const userByNickname = await this.prisma.users.findFirst({
       where: {
         nickname,
-        OR: [{ deactivatedAt: { gt: new Date() } }, { deactivatedAt: null }]
+        deactivatedAt: null
       }
     });
 
@@ -81,16 +81,16 @@ export class UsersService {
   }
 
   async deactivateUser(userId: number) {
-    await this.userFind(userId);
-    // 탈퇴 신청 이후 7일 동안은 사용가능
-    // 7일이 ms단위로 604800000
-    // setHours 로 7일 후 23시 59분 59초 999밀리초 까지 유효하게 설정
+    const foundUser = await this.userFind(userId);
+
     await this.prisma.users.update({
       where: {
         id: userId
       },
       data: {
-        deactivatedAt: new Date(new Date(Date.now() + 604800000).setHours(23, 59, 59, 999))
+        email: `${foundUser.email}_${new Date().toISOString()}`,
+        nickname: `${foundUser.nickname}_${new Date().toISOString()}`,
+        deactivatedAt: new Date()
       }
     });
   }

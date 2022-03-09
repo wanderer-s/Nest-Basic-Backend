@@ -74,8 +74,8 @@ export class UsersController {
   @ApiBearerAuth()
   //
   @ApiOperation({
-    description: '## 회원탈퇴 신청\n이후 일주일동안 사용 가능하고 일주일이 지나면 해당 **email**과 **nickname**으로 새로 회원가입 가능',
-    summary: '회원탈퇴 신청'
+    description: '## 회원탈퇴',
+    summary: '회원탈퇴'
   })
   @ApiUnauthorizedResponse({
     description: '- `Unauthorized`'
