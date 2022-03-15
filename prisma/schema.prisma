@@ -24,6 +24,7 @@ model Users {
 
 model Posts {
   id        Int        @id @default(autoincrement()) @map("_id")
+  viewed    Int        @default(0)
   title     String     @db.VarChar(256)
   content   String
   createdAt DateTime   @default(now()) @map("created_at")
