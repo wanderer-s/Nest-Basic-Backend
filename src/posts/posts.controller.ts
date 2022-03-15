@@ -1,5 +1,15 @@
-import { Controller, DefaultValuePipe, Get, ParseIntPipe, Query } from '@nestjs/common';
-import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, DefaultValuePipe, Get, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { PostCreateDto } from './dto/post.create.dto';
 import { PostsResponseDto } from './dto/posts.response.dto';
 import { PostsService } from './posts.service';
 
@@ -39,5 +49,20 @@ export class PostsController {
     @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
   ) {
     return await this.postsService.getPosts(page, count);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  //
+  @ApiOperation({
+    description: '## 게시물 작성',
+    summary: '게시물 작성'
+  })
+  @ApiUnauthorizedResponse({
+    description: '- `Unauthorized`'
+  })
+  @Post()
+  async createPost(@Body() dto: PostCreateDto, @Req() req) {
+    await this.postsService.createPost(dto, req.user.id);
   }
 }

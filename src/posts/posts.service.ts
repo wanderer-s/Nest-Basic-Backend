@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { PostCreateDto } from './dto/post.create.dto';
 
 @Injectable()
 export class PostsService {
@@ -19,5 +20,10 @@ export class PostsService {
     };
 
     return { pagination, posts };
+  }
+
+  async createPost(dto: PostCreateDto, userId: number) {
+    const data = { ...dto, userId };
+    await this.prisma.posts.create({ data });
   }
 }
