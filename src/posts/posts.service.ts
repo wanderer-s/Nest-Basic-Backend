@@ -8,7 +8,27 @@ export class PostsService {
 
   async getPosts(page: number, count: number) {
     const skip = (page - 1) * count;
-    const posts = await this.prisma.posts.findMany({ where: { published: true }, skip, take: count, orderBy: { createdAt: 'desc' } });
+    const posts = await this.prisma.posts.findMany({
+      select: {
+        id: true,
+        title: true,
+        viewed: true,
+        userId: true,
+        content: false,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      },
+      where: { published: true },
+      skip,
+      take: count,
+      orderBy: { createdAt: 'desc' }
+    });
+
     const allPosts = await this.prisma.posts.count({ where: { published: true } });
 
     const pagination = {
