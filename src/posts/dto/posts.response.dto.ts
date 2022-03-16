@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { IsNumber } from 'class-validator';
 import { PostResponseDto } from './post.response.dto';
 
 class Pagination {
@@ -17,9 +18,12 @@ class Pagination {
   @ApiProperty({ description: '현재 page의 post 갯수' })
   currCount: number;
 }
-
+class PostofListDto extends OmitType(PostResponseDto, ['content', 'published'] as const) {
+  @ApiProperty({ type: 'object', properties: { comments: { type: 'number', description: '댓글 갯수' } } })
+  _count;
+}
 export class PostsResponseDto {
-  @ApiProperty({ type: [PostResponseDto] })
+  @ApiProperty({ type: [PostofListDto] })
   posts;
 
   @ApiProperty()
