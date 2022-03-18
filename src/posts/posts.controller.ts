@@ -1,6 +1,7 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -12,6 +13,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { PostCreateDto } from './dto/post.create.dto';
+import { PostUpdateDto } from './dto/post.update.dto';
 import { PostsResponseDto } from './dto/posts.response.dto';
 import { PostsService } from './posts.service';
 
@@ -86,5 +88,27 @@ export class PostsController {
   @Get(':id')
   async getPostById(@Param('id') id: number) {
     return await this.postsService.postViewUpdate(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  //
+  @ApiOperation({
+    description: '## 게시글 수정\n- 제목\n- 내용\n- 공개여부',
+    summary: '게시글 수정'
+  })
+  @ApiUnauthorizedResponse({
+    description: '- `Unauthorized`'
+  })
+  @ApiForbiddenResponse({
+    description: '- `Access is denied` 잘못된 접근'
+  })
+  @ApiNotFoundResponse({
+    description: "- `Couldn't find post` 주어진 id로 게시글을 찾을 수 없음"
+  })
+  //
+  @Patch(':id')
+  async updatePostById(@Param('id') id: number, @Body() dto: PostUpdateDto, @Req() req) {
+    await this.postsService.updatePost(dto, id, req.user.id);
   }
 }

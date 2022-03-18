@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { PostCreateDto } from './dto/post.create.dto';
+import { PostUpdateDto } from './dto/post.update.dto';
 
 @Injectable()
 export class PostsService {
@@ -63,5 +64,13 @@ export class PostsService {
     }
 
     return foundPost;
+  }
+
+  async updatePost(dto: PostUpdateDto, postId: number, userId: number) {
+    const foundPost = await this.getPostById(postId);
+
+    if (foundPost.userId !== userId) throw new ForbiddenException('Access is denied');
+
+    await this.prisma.posts.update({ where: { id: postId }, data: dto });
   }
 }
