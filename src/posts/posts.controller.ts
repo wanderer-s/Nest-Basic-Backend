@@ -1,9 +1,11 @@
-import { Body, Controller, DefaultValuePipe, Get, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse
@@ -64,5 +66,25 @@ export class PostsController {
   @Post()
   async createPost(@Body() dto: PostCreateDto, @Req() req) {
     await this.postsService.createPost(dto, req.user.id);
+  }
+
+  @ApiOperation({
+    description: '## 특정 게시글 호출',
+    summary: '특정 게시글 호출'
+  })
+  @ApiParam({
+    name: 'id',
+    schema: {
+      type: 'integer',
+      example: 1
+    }
+  })
+  @ApiNotFoundResponse({
+    description: "- `Couldn't find post` 주어진 id로 게시글을 찾을 수 없음"
+  })
+  //
+  @Get(':id')
+  async getPostById(@Param('id') id: number) {
+    return await this.postsService.postViewUpdate(id);
   }
 }

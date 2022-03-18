@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { PostCreateDto } from './dto/post.create.dto';
 
@@ -45,5 +45,23 @@ export class PostsService {
   async createPost(dto: PostCreateDto, userId: number) {
     const data = { ...dto, userId };
     await this.prisma.posts.create({ data });
+  }
+
+  async getPostById(id: number) {
+    const foundPost = await this.prisma.posts.findUnique({ where: { id } });
+
+    if (!foundPost) throw new NotFoundException("Couldn't find post");
+
+    return foundPost;
+  }
+
+  async postViewUpdate(id: number) {
+    let foundPost = await this.getPostById(id);
+
+    if (Date.now() - foundPost.updatedAt.getTime() > 300000) {
+      foundPost = await this.prisma.posts.update({ where: { id }, data: { viewed: { increment: 1 } } });
+    }
+
+    return foundPost;
   }
 }
