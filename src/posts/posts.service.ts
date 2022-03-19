@@ -56,6 +56,12 @@ export class PostsService {
     return foundPost;
   }
 
+  async validateWriter(postId: number, userId: number) {
+    const foundPost = await this.getPostById(postId);
+
+    if (foundPost.userId !== userId) throw new ForbiddenException('Access is denied');
+  }
+
   async postViewUpdate(id: number) {
     let foundPost = await this.getPostById(id);
 
