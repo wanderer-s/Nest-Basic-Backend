@@ -73,10 +73,14 @@ export class PostsService {
   }
 
   async updatePost(dto: PostUpdateDto, postId: number, userId: number) {
-    const foundPost = await this.getPostById(postId);
-
-    if (foundPost.userId !== userId) throw new ForbiddenException('Access is denied');
+    await this.validateWriter(postId, userId);
 
     await this.prisma.posts.update({ where: { id: postId }, data: dto });
+  }
+
+  async deletePost(postId: number, userId: number) {
+    await this.validateWriter(postId, userId);
+
+    await this.prisma.posts.delete({ where: { id: postId } });
   }
 }

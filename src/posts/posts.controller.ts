@@ -1,4 +1,4 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -110,5 +110,27 @@ export class PostsController {
   @Patch(':id')
   async updatePostById(@Param('id') id: number, @Body() dto: PostUpdateDto, @Req() req) {
     await this.postsService.updatePost(dto, id, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  //
+  @ApiOperation({
+    summary: '게시글 삭제',
+    description: '## 게시글 삭제'
+  })
+  @ApiUnauthorizedResponse({
+    description: '- `Unauthorized`'
+  })
+  @ApiForbiddenResponse({
+    description: '- `Access is denied` 잘못된 접근'
+  })
+  @ApiNotFoundResponse({
+    description: "- `Couldn't find post` 주어진 id로 게시글을 찾을 수 없음"
+  })
+  //
+  @Delete(':id')
+  async deletePost(@Param('id') id: number, @Req() req) {
+    await this.postsService.deletePost(id, req.user.id);
   }
 }
