@@ -32,6 +32,7 @@ export class PostsController {
   @ApiQuery({
     name: 'page',
     type: 'integer',
+    required: false,
     schema: {
       default: 1
     }
@@ -39,6 +40,7 @@ export class PostsController {
   @ApiQuery({
     name: 'count',
     type: 'integer',
+    required: false,
     schema: {
       default: 10
     }
@@ -51,7 +53,7 @@ export class PostsController {
   async getPosts(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
-  ) {
+  ): Promise<PostsResponseDto> {
     return await this.postsService.getPosts(page, count);
   }
 
@@ -97,6 +99,14 @@ export class PostsController {
     description: '## 게시글 수정\n- 제목\n- 내용\n- 공개여부',
     summary: '게시글 수정'
   })
+  @ApiParam({
+    name: 'id',
+    description: '게시글 id',
+    type: 'integer',
+    schema: {
+      example: 1
+    }
+  })
   @ApiUnauthorizedResponse({
     description: '- `Unauthorized`'
   })
@@ -119,6 +129,14 @@ export class PostsController {
     summary: '게시글 삭제',
     description: '## 게시글 삭제'
   })
+  @ApiParam({
+    name: 'id',
+    description: '게시글 id',
+    type: 'integer',
+    schema: {
+      example: 1
+    }
+  })
   @ApiUnauthorizedResponse({
     description: '- `Unauthorized`'
   })
@@ -132,5 +150,49 @@ export class PostsController {
   @Delete(':id')
   async deletePost(@Param('id') id: number, @Req() req) {
     await this.postsService.deletePost(id, req.user.id);
+  }
+
+  @ApiOperation({
+    summary: '특정 사용자가 게시한 게시글 호출',
+    description: '## 특정 사용자가 게시한 게시글 호출'
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'integer',
+    description: '사용자 id',
+    schema: {
+      example: 1
+    }
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'integer',
+    required: false,
+    schema: {
+      default: 1
+    }
+  })
+  @ApiQuery({
+    name: 'count',
+    type: 'integer',
+    required: false,
+    schema: {
+      default: 10
+    }
+  })
+  @ApiOkResponse({
+    type: PostsResponseDto
+  })
+  @ApiNotFoundResponse({
+    description: '- `Could not find user`'
+  })
+  //
+  @Get('byuser/:id')
+  async getPostsByUser(
+    @Param('id') id: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
+  ): Promise<PostsResponseDto> {
+    return await this.postsService.getPostsByUserId(id, page, count);
   }
 }

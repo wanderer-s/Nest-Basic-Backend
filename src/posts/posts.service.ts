@@ -83,4 +83,40 @@ export class PostsService {
 
     await this.prisma.posts.delete({ where: { id: postId } });
   }
+
+  async getPostsByUserId(userId: number, page: number, count: number) {
+    const skip = (page - 1) * count;
+    const posts = await this.prisma.posts.findMany({
+      select: {
+        id: true,
+        title: true,
+        viewed: true,
+        userId: true,
+        content: false,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      },
+      where: { userId, published: true },
+      skip,
+      take: count,
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const allPosts = await this.prisma.posts.count({ where: { userId, published: true } });
+
+    const pagination = {
+      page,
+      count,
+      totalPage: allPosts % page > 0 ? Math.floor(allPosts / page) + 1 : Math.floor(allPosts / page),
+      totalCount: allPosts,
+      currCount: posts.length
+    };
+
+    return { posts, pagination };
+  }
 }
