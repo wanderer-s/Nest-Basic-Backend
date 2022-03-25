@@ -102,8 +102,8 @@ export class PostsController {
   @ApiParam({
     name: 'id',
     description: '게시글 id',
-    type: 'integer',
     schema: {
+      type: 'integer',
       example: 1
     }
   })
@@ -132,8 +132,8 @@ export class PostsController {
   @ApiParam({
     name: 'id',
     description: '게시글 id',
-    type: 'integer',
     schema: {
+      type: 'integer',
       example: 1
     }
   })
@@ -158,9 +158,9 @@ export class PostsController {
   })
   @ApiParam({
     name: 'id',
-    type: 'integer',
     description: '사용자 id',
     schema: {
+      type: 'integer',
       example: 1
     }
   })
