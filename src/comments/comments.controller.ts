@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { CommentsService } from './comments.service';
@@ -33,7 +33,35 @@ export class CommentsController {
   })
   //
   @Post()
-  async createComment(@Param('id') postId: number, @Body() dto: CommentCreateDto, @Req() req) {
-    await this.commentsService.createComment(postId, dto, req.user.id)
+  async createComment(@Param('id') id: number, @Body() dto: CommentCreateDto, @Req() req) {
+    await this.commentsService.createComment(id, dto, req.user.id)
+  }
+
+  @ApiOperation({
+    summary: '게시글에 달린 댓글 불러오기'
+  })
+  @ApiParam({
+    name: 'id',
+    description: '게시글 id',
+    schema: {
+      type: 'integer',
+      example: 1
+    }
+  })
+  @ApiQuery({
+    name: 'lastCommentId',
+    description: '댓글을 더 불러오기 전 가장 하단에 있던 commentId',
+    required: false,
+    schema: {
+      type: 'integer'
+    }
+  })
+  @ApiOkResponse({
+    type: CommentsResponseDto
+  })
+  //
+  @Get()
+  async getComments(@Param('id') id: number, @Query('lastCommentId') lastCommentId?: number) {
+    return await this.commentsService.getComments(id, lastCommentId)
   }
 }
