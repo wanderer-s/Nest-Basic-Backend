@@ -64,4 +64,14 @@ export class CommentsService {
 
     await this.prisma.comments.update({where: {id: commentId}, data: dto})
   }
+
+  async deleteComment(postId: number, commentId: number, userId: number): Promise<void> {
+    const foundPost = await this.getPostById(postId)
+    const foundComment = await this.getCommentById(commentId)
+
+    if(foundPost.userId !== userId || foundComment.userId !== userId) throw new ForbiddenException('Access is denied')
+    if(postId !== foundComment.postId) throw new ForbiddenException('Access is denied')
+
+    await this.prisma.comments.delete({where: {id: commentId}})
+  }
 }
