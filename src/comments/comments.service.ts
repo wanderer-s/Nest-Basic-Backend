@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CommentCreateDto } from './dto/comment.create.dto';
+import {Comments} from '@prisma/client'
 
 @Injectable()
 export class CommentsService {
@@ -13,7 +14,19 @@ export class CommentsService {
     return foundPost
   }
 
-  async createComment(postId: number, dto: CommentCreateDto, userId: number) {
+  async getCommentById(commentId: number): Promise<Comments> {
+    const foundComment = await this.prisma.comments.findUnique({where: {id: commentId}})
+
+    if(!foundComment) throw new NotFoundException("Couldn't find comment")
+
+    return foundComment
+  }
+
+  async validateCommenter(comment:Comments , userId): Promise<void> {
+    if(comment.userId !== userId) throw new ForbiddenException('Access is denied')
+  }
+
+  async createComment(postId: number, dto: CommentCreateDto, userId: number): Promise<void> {
     await this.getPostById(postId)
 
     const data = {postId, ...dto, userId}
@@ -24,7 +37,7 @@ export class CommentsService {
     if(lastCommentId) {
       return await this.prisma.comments.findMany(
         {
-          take: -10,
+          take: 10,
           skip: 1,
           cursor: {
             id: lastCommentId
@@ -40,5 +53,15 @@ export class CommentsService {
           orderBy: {createdAt: 'desc'}
         })
     }
+  }
+
+  async updateComment(postId: number, commentId: number, dto: CommentCreateDto, userId: number): Promise<void> {
+    await this.getPostById(postId)
+    const foundComment = await this.getCommentById(commentId)
+    await this.validateCommenter(foundComment, userId)
+
+    if(postId !== foundComment.postId) throw new ForbiddenException('Access is denied')
+
+    await this.prisma.comments.update({where: {id: commentId}, data: dto})
   }
 }
