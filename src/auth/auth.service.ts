@@ -1,23 +1,30 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Logger, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../common/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import bcrypt from 'bcrypt';
+import { UsersRepository } from '../users/repository/users.repository';
+
+type token = {
+  token: string;
+};
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService, private jwtService: JwtService) {}
+  private readonly logger = new Logger(AuthService.name);
+  constructor(private readonly usersRepository: UsersRepository, private jwtService: JwtService) {}
 
-  async signIn(data: LoginDto) {
+  async signIn(data: LoginDto): Promise<token> {
     const { email, password } = data;
 
-    const user = await this.prisma.users.findUnique({ where: { email } });
+    const user = await this.usersRepository.getUserByEmail(email);
 
     if (!user) {
+      this.logger.error('Invalid email');
       throw new BadRequestException('Check email or password');
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
+      this.logger.error('Invalid password');
       throw new BadRequestException('Check email or password');
     }
 
