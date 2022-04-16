@@ -1,0 +1,44 @@
+import { Injectable } from '@nestjs/common';
+import { Prisma, Users } from '@prisma/client';
+
+@Injectable()
+export class MockUsersRepository {
+  private readonly usersStorage = [];
+  constructor() {
+    this.usersStorage = [
+      {
+        id: 1,
+        nickname: 'tester',
+        email: 'test@test.com',
+        deactivatedAt: null,
+        password: 'test123!'
+      }
+    ];
+  }
+
+  async createUser(data: Prisma.UsersCreateInput): Promise<void> {
+    const userId = this.usersStorage.length + 1;
+    const userData = { ...data, id: userId };
+    this.usersStorage.push(userData);
+  }
+
+  async getUserByNickName(nickname: string): Promise<Users | null> {
+    return await this.usersStorage.find((user) => user.nickname === nickname);
+  }
+
+  async getUserById(id: number): Promise<Users | null> {
+    return await this.usersStorage.find((user) => user.id === id);
+  }
+
+  async getUserByEmail(email: string): Promise<Users | null> {
+    return await this.usersStorage.find((user) => user.email === email);
+  }
+
+  async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<void> {
+    const foundIndex = this.usersStorage.findIndex((user) => user.id === id);
+
+    for (const [key, value] of Object.entries(data)) {
+      this.usersStorage[foundIndex][key] = value;
+    }
+  }
+}
