@@ -11,7 +11,7 @@ export class MockUsersRepository {
         nickname: 'tester',
         email: 'test@test.com',
         deactivatedAt: null,
-        password: 'test123!'
+        password: '$2b$10$GPCPQ1lQ4UbuSNwHO/wul.vXKIMZzfmAma8IVOQkEkhtLh4RFRdgW' // hashed (test1test)
       }
     ];
   }
