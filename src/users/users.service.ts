@@ -23,6 +23,14 @@ export class UsersService {
     }
   }
 
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 10);
+  }
+
+  async comparePassword(targetPassword: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(targetPassword, hashedPassword)
+  }
+
   async getUserById(userId): Promise<Users> {
     const foundUser = await this.usersRepository.getUserById(userId);
 
@@ -53,7 +61,7 @@ export class UsersService {
 
     this.validatePassword(password, passwordCheck);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await this.hashPassword(password);
 
     await this.usersRepository.createUser({ email, nickname, password: hashedPassword });
   }
@@ -63,7 +71,7 @@ export class UsersService {
 
     this.validatePassword(dto.newPassword, dto.newPasswordCheck);
 
-    if (!(await bcrypt.compare(dto.password, foundUser.password))) {
+    if (!(await this.comparePassword(dto.password, foundUser.password))) {
       this.logger.error('Invalid Password');
       throw new BadRequestException('Invalid Password');
     }
@@ -73,7 +81,7 @@ export class UsersService {
       throw new BadRequestException('password and new password cannot be same');
     }
 
-    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+    const hashedPassword = await this.hashPassword(dto.newPassword)
 
     await this.usersRepository.updateUser(userId, { password: hashedPassword });
   }
