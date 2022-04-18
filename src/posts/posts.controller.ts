@@ -193,6 +193,6 @@ export class PostsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
   ): Promise<PostsResponseDto> {
-    return await this.postsService.getPostsByUserId(id, page, count);
+    return await this.postsService.getPublishedPostsByUserId(id, page, count);
   }
 }
