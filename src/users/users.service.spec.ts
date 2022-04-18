@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { MockUsersRepository } from './repository/mock.users.repository';
 import { UsersRepository } from './repository/users.repository';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { EmptyLogger } from '../common/empty.logger';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -18,6 +19,7 @@ describe('UsersService', () => {
       ]
     }).compile();
 
+    module.useLogger(new EmptyLogger())
     service = module.get<UsersService>(UsersService);
   });
 

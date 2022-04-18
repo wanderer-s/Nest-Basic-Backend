@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PostsRepository } from './repository/posts.repository';
 import { MockPostsRepository } from './repository/mock.posts.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { EmptyLogger } from '../common/empty.logger';
 
 describe('PostsService', () => {
   let service: PostsService
@@ -18,6 +19,7 @@ describe('PostsService', () => {
       ]
     }).compile()
 
+    module.useLogger(new EmptyLogger())
     service = module.get<PostsService>(PostsService)
   })
 
