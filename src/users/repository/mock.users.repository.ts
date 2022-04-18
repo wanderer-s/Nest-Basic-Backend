@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Users } from '@prisma/client';
+import { AbstractUsersRepository } from './abstract.users.repository';
 
 @Injectable()
-export class MockUsersRepository {
+export class MockUsersRepository extends AbstractUsersRepository{
   private readonly usersStorage = [];
   constructor() {
+    super()
     this.usersStorage = [
       {
         id: 1,

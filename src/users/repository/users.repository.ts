@@ -1,10 +1,13 @@
-import {PrismaService} from '../../common/prisma.service';
-import { Users, Prisma } from '@prisma/client'
+import { PrismaService } from '../../common/prisma.service';
+import { Prisma, Users } from '@prisma/client'
 import { Injectable } from '@nestjs/common';
+import { AbstractUsersRepository } from './abstract.users.repository';
 
 @Injectable()
-export class UsersRepository {
-  constructor(private prisma: PrismaService) {}
+export class UsersRepository extends AbstractUsersRepository {
+  constructor(private prisma: PrismaService) {
+    super();
+  }
 
 
   async createUser(data: Prisma.UsersCreateInput) {
@@ -12,8 +15,7 @@ export class UsersRepository {
       data
     })
   }
-
-  async getUserByNickName(nickname: string): Promise<Users|null> {
+  async getUserByNickName(nickname: string): Promise<Users | null> {
     return await this.prisma.users.findFirst({
       where: {
         nickname,
@@ -21,8 +23,7 @@ export class UsersRepository {
       }
     })
   }
-
-  async getUserById(id: number): Promise<Users|null> {
+  async getUserById(id: number): Promise<Users | null> {
     return await this.prisma.users.findFirst({
       where: {
         id,
@@ -30,8 +31,7 @@ export class UsersRepository {
       }
     })
   }
-
-  async getUserByEmail(email: string): Promise<Users|null> {
+  async getUserByEmail(email: string): Promise<Users | null> {
     return await this.prisma.users.findFirst({
       where: {
         email,
@@ -39,7 +39,6 @@ export class UsersRepository {
       }
     })
   }
-
   async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<void> {
     await this.prisma.users.update({
       where: {

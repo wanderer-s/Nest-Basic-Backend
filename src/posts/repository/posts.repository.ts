@@ -1,10 +1,11 @@
 import { PrismaService } from '../../common/prisma.service';
 import { Posts, Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common';
+import { AbstractPostsRepository } from './abstract.posts.repository';
 
 @Injectable()
-export class PostsRepository {
-  constructor(private prisma: PrismaService) {}
+export class PostsRepository extends AbstractPostsRepository{
+  constructor(private prisma: PrismaService) {super()}
 
   async getPublishedPosts(skip: number, take: number) {
     return await this.prisma.posts.findMany({
