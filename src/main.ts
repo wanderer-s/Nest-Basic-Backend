@@ -6,7 +6,10 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: 'GET, HEAD, PATCH, POST, DELETE'
+  });
   app.use(helmet());
   app.useGlobalPipes(
     new ValidationPipe({

@@ -2,7 +2,7 @@
 
 ---
 
-## How to use
+## How to use in local enviroment
 
 1. clone this repository
 2. `npm install`
@@ -32,5 +32,7 @@
 
 ---
 You can check the API document.
+
+![img.png](img.png)
 
 this project hasn't finished. I am going to make more features
