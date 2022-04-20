@@ -1,6 +1,7 @@
-import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -15,7 +16,9 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { PostCreateDto } from './dto/post.create.dto';
 import { PostUpdateDto } from './dto/post.update.dto';
 import { PostsResponseDto } from './dto/posts.response.dto';
+import { PostResponseDto } from './dto/post.response.dto';
 import { PostsService } from './posts.service';
+import { Posts } from '@prisma/client';
 
 @ApiTags('Posts')
 @ApiInternalServerErrorResponse({
@@ -51,8 +54,8 @@ export class PostsController {
   //
   @Get()
   async getPosts(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
+    @Query('page', new DefaultValuePipe(1)) page: number,
+    @Query('count', new DefaultValuePipe(10)) count: number
   ): Promise<PostsResponseDto> {
     return await this.postsService.getPosts(page, count);
   }
@@ -67,9 +70,13 @@ export class PostsController {
   @ApiUnauthorizedResponse({
     description: '- `Unauthorized`'
   })
+  @ApiCreatedResponse({
+    type: PostResponseDto
+  })
+  //
   @Post()
-  async createPost(@Body() dto: PostCreateDto, @Req() req) {
-    await this.postsService.createPost(dto, req.user.id);
+  async createPost(@Body() dto: PostCreateDto, @Req() req): Promise<Posts> {
+    return await this.postsService.createPost(dto, req.user.id);
   }
 
   @ApiOperation({
@@ -85,6 +92,9 @@ export class PostsController {
   })
   @ApiNotFoundResponse({
     description: "- `Couldn't find post` 주어진 id로 게시글을 찾을 수 없음"
+  })
+  @ApiOkResponse({
+    type: PostResponseDto
   })
   //
   @Get(':id')
@@ -116,10 +126,13 @@ export class PostsController {
   @ApiNotFoundResponse({
     description: "- `Couldn't find post` 주어진 id로 게시글을 찾을 수 없음"
   })
+  @ApiOkResponse({
+    type: PostResponseDto
+  })
   //
   @Patch(':id')
-  async updatePostById(@Param('id') id: number, @Body() dto: PostUpdateDto, @Req() req) {
-    await this.postsService.updatePost(dto, id, req.user.id);
+  async updatePostById(@Param('id') id: number, @Body() dto: PostUpdateDto, @Req() req): Promise<Posts> {
+    return await this.postsService.updatePost(dto, id, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -190,9 +203,9 @@ export class PostsController {
   @Get('byuser/:id')
   async getPostsByUser(
     @Param('id') id: number,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('count', new DefaultValuePipe(10), ParseIntPipe) count: number
+    @Query('page', new DefaultValuePipe(1)) page: number,
+    @Query('count', new DefaultValuePipe(10)) count: number
   ): Promise<PostsResponseDto> {
-    return await this.postsService.getPostsByUserId(id, page, count);
+    return await this.postsService.getPublishedPostsByUserId(id, page, count);
   }
 }

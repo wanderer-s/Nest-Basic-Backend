@@ -1,5 +1,13 @@
 import { Body, Controller, Delete, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { PasswordUpdateDto } from './dto/password.update.dto';
 import { UserCreateDto } from './dto/user.create.dto';
@@ -24,7 +32,7 @@ export class UsersController {
   })
   //
   @Post('')
-  async signUp(@Body() dto: UserCreateDto) {
+  async signUp(@Body() dto: UserCreateDto): Promise<void> {
     return await this.usersService.signUp(dto);
   }
 
@@ -40,7 +48,7 @@ export class UsersController {
   })
   @ApiBadRequestResponse({
     description:
-      '- `Password must follow the rule` 비밀번호는 8~20자리이며 숫자와 문자 최소 1개 포함\n- `newPassword and newPasswordCheck must be same` 비밀번호와 비밀번호확인 불일치'
+      '- `Invalid Password` 잘못된 비밀번호\n- `Password must follow the rule` 비밀번호는 8~20자리이며 숫자와 문자 최소 1개 포함\n- `password and passwordCheck must be same` 변경할 비밀번호와 비밀번호확인 불일치\n- `password and new password cannot be same` 기존 비밀번호와 변경할 비밀번호는 같을 수 없음'
   })
   @ApiForbiddenResponse({
     description: '- `Access is denied` 잘못된 접근'
@@ -66,7 +74,7 @@ export class UsersController {
   })
   //
   @Patch()
-  async userUpdate(@Body() dto: UserUpdateDto, @Req() req) {
+  async userUpdate(@Body() dto: UserUpdateDto, @Req() req): Promise<void> {
     await this.usersService.userUpdate(req.user.id, dto);
   }
 
@@ -84,7 +92,7 @@ export class UsersController {
     description: '- `Access is denied` 잘못된 접근'
   })
   @Delete()
-  async deactivateUser(@Req() req) {
+  async deactivateUser(@Req() req): Promise<void> {
     await this.usersService.deactivateUser(req.user.id);
   }
 }
