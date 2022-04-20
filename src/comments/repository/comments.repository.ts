@@ -1,5 +1,5 @@
-import { PrismaService} from '../../common/prisma.service';
-import { Prisma, Comments } from '@prisma/client'
+import { PrismaService } from '../../common/prisma.service';
+import { Prisma, Comments } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { AbstractCommentsRepository } from './abstract.comments.repository';
 
@@ -10,15 +10,15 @@ export class CommentsRepository extends AbstractCommentsRepository {
   }
 
   async getCommentById(id: number): Promise<Comments> {
-    return await this.prisma.comments.findUnique({where: {id}})
+    return await this.prisma.comments.findUnique({ where: { id } });
   }
 
   async createComment(data: Prisma.CommentsUncheckedCreateInput): Promise<Comments> {
-    return await this.prisma.comments.create({data})
+    return await this.prisma.comments.create({ data });
   }
 
   async updateComment(id: number, data: Prisma.CommentsUpdateInput): Promise<Comments> {
-    return await this.prisma.comments.update({where: {id}, data})
+    return await this.prisma.comments.update({ where: { id }, data });
   }
 
   async getComments(postId: number, take: number, lastCommentId?: number): Promise<Comments[]> {
@@ -30,7 +30,10 @@ export class CommentsRepository extends AbstractCommentsRepository {
       },
       where: {
         postId
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
-    })
+    });
   }
 }
