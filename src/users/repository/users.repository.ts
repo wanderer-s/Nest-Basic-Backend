@@ -1,5 +1,5 @@
 import { PrismaService } from '../../common/prisma.service';
-import { Prisma, Users } from '@prisma/client'
+import { Prisma, Users } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { AbstractUsersRepository } from './abstract.users.repository';
 
@@ -9,11 +9,10 @@ export class UsersRepository extends AbstractUsersRepository {
     super();
   }
 
-
   async createUser(data: Prisma.UsersCreateInput) {
     await this.prisma.users.create({
       data
-    })
+    });
   }
   async getUserByNickName(nickname: string): Promise<Users | null> {
     return await this.prisma.users.findFirst({
@@ -21,7 +20,7 @@ export class UsersRepository extends AbstractUsersRepository {
         nickname,
         deactivatedAt: null
       }
-    })
+    });
   }
   async getUserById(id: number): Promise<Users | null> {
     return await this.prisma.users.findFirst({
@@ -29,7 +28,7 @@ export class UsersRepository extends AbstractUsersRepository {
         id,
         deactivatedAt: null
       }
-    })
+    });
   }
   async getUserByEmail(email: string): Promise<Users | null> {
     return await this.prisma.users.findFirst({
@@ -37,14 +36,14 @@ export class UsersRepository extends AbstractUsersRepository {
         email,
         deactivatedAt: null
       }
-    })
+    });
   }
-  async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<void> {
-    await this.prisma.users.update({
+  async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<Users> {
+    return await this.prisma.users.update({
       where: {
         id
       },
       data
-    })
+    });
   }
 }

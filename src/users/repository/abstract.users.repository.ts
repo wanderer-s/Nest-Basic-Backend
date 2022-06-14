@@ -9,5 +9,5 @@ export abstract class AbstractUsersRepository {
 
   abstract getUserByEmail(email: string): Promise<Users | null>;
 
-  abstract updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<void>;
+  abstract updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<Users>;
 }
