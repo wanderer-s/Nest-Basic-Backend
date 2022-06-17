@@ -6,11 +6,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    methods: 'GET, HEAD, PATCH, POST, DELETE'
-  });
-  app.use(helmet());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -25,6 +21,11 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, swaggerDocument, {
     swaggerOptions: { defaultModelsExpandDepth: -1 }
   });
+
+  app.enableCors({
+    methods: 'GET, HEAD, PATCH, POST, DELETE'
+  });
+  app.use(helmet());
   await app.listen(3000);
 }
 bootstrap();

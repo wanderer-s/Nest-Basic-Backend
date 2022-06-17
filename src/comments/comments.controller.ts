@@ -10,7 +10,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { JwtAuthGuard } from 'src/auth/strategy/jwt.guard';
 import { CommentsService } from './comments.service';
 import { CommentCreateDto } from './dto/comment.create.dto';
 import { CommentsResponseDto } from './dto/comments.response.dto';

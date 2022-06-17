@@ -8,7 +8,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { JwtAuthGuard } from 'src/auth/strategy/jwt.guard';
 import { PasswordUpdateDto } from './dto/password.update.dto';
 import { UserCreateDto } from './dto/user.create.dto';
 import { UserUpdateDto } from './dto/user.update.dto';

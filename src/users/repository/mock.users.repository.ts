@@ -3,10 +3,10 @@ import { Prisma, Users } from '@prisma/client';
 import { AbstractUsersRepository } from './abstract.users.repository';
 
 @Injectable()
-export class MockUsersRepository extends AbstractUsersRepository{
+export class MockUsersRepository extends AbstractUsersRepository {
   private readonly usersStorage = [];
   constructor() {
-    super()
+    super();
     this.usersStorage = [
       {
         id: 1,
@@ -36,11 +36,12 @@ export class MockUsersRepository extends AbstractUsersRepository{
     return await this.usersStorage.find((user) => user.email === email);
   }
 
-  async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<void> {
+  async updateUser(id: number, data: Prisma.UsersUpdateInput): Promise<Users> {
     const foundIndex = this.usersStorage.findIndex((user) => user.id === id);
 
     for (const [key, value] of Object.entries(data)) {
       this.usersStorage[foundIndex][key] = value;
     }
+    return this.usersStorage[foundIndex];
   }
 }

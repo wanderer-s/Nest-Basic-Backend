@@ -12,7 +12,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { JwtAuthGuard } from 'src/auth/strategy/jwt.guard';
 import { PostCreateDto } from './dto/post.create.dto';
 import { PostUpdateDto } from './dto/post.update.dto';
 import { PostsResponseDto } from './dto/posts.response.dto';
